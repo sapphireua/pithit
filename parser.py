@@ -20,4 +20,4 @@ def parse_csv(path):
             for row in reader:
                 yield row
     except FileNotFoundError:
-        sys.exit('Make shore that you provide correct source name in *.csv format')
+        sys.exit('Make sure that you provide correct source name in *.csv format')
