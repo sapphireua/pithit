@@ -1,6 +1,6 @@
 import sys
 
-from constants import SOURCE_ROOT, SOURCE_FILE, PITCHERS, HITTERS
+from constants import SOURCE_ROOT, SOURCE_FILE, PITCHERS_STRUCT, HITTERS_STRUCT, PITCHERS_SOURCE, TAG
 from database.db_handler import DbHandler
 from parser import parse_input, parse_csv
 
@@ -21,20 +21,26 @@ def source_path_handler(arguments):
     return source
 
 
-def create_and_insert_struct(parsed_data, tables):
-    struct = {PITCHERS: [], HITTERS: []}
+def create_struct(parsed_data, tables, arguments):
+    struct = {PITCHERS_STRUCT: [], HITTERS_STRUCT: []}
 
     for n, el in enumerate(parsed_data):
-        if el.get('position') == 'Pitcher':
-            struct[PITCHERS].append(el)
+        if el.get(TAG) == PITCHERS_SOURCE:
+            struct[PITCHERS_STRUCT].append(el)
         else:
-            struct[HITTERS].append(el)
-        if n % 5000 == 0:
-            print(n)
-            for tablename, data in struct.items():
-                tables.insert(tablename, data)
-                # for tablename, data in struct.items():
-                #     tables.insert(tablename, data)
+            struct[HITTERS_STRUCT].append(el)
+        if arguments.chunk_size:
+            if n % arguments.chunk_size == 0 and n > 0:
+                print('{} items was write, chunk write enabled '.format(n))
+                insert_struct(tables, struct)
+                struct[PITCHERS_STRUCT].clear()
+                struct[HITTERS_STRUCT].clear()
+    insert_struct(tables, struct)
+
+
+def insert_struct(tables, struct):
+    for tablename, data in struct.items():
+        tables.insert(tablename, data)
 
 
 def executor():
@@ -48,7 +54,7 @@ def executor():
 
     parsed_data = parse_csv(source)
 
-    create_and_insert_struct(parsed_data, tables)
+    create_struct(parsed_data, tables, arguments)
 
 
 if __name__ == "__main__":
