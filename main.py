@@ -1,11 +1,32 @@
+import logging
 import sys
 
 from constants import SOURCE_ROOT, SOURCE_FILE, PITCHERS_STRUCT, HITTERS_STRUCT, PITCHERS_SOURCE, TAG
 from database.db_handler import DbHandler
+from logger import LogToDbHandler
 from parser import parse_input, parse_csv
+
+logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger('main_logger')
+
+ch = LogToDbHandler()
+ch.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s')
+
+ch.setFormatter(formatter)
+
+logger.addHandler(ch)
 
 
 def service_args_handler(arguments, tables):
+    if arguments.drop_log_table:
+        tables.drop_logging_table()
+        sys.exit('Log table was successfully dropped')
+    if arguments.create_log_table:
+        tables.create_logging_table()
+        sys.exit('Log table was successfully created')
     if arguments.drop_tables:
         tables.drop_table()
         sys.exit('Tables was successfully dropped')

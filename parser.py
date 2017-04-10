@@ -5,6 +5,8 @@ import sys
 
 def parse_input():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--create_log_table', help='create log table', action='store_true')
+    parser.add_argument('--drop_log_table', help='drop log table', action='store_true')
     parser.add_argument('--create_tables', help='create tables', action='store_true')
     parser.add_argument('--drop_tables', help='drop tables', action='store_true')
     parser.add_argument('--chunk_size', help='specify size of records in one transaction (integer)', type=int)
