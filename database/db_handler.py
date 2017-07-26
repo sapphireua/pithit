@@ -1,6 +1,5 @@
 import sys
 import sqlite3
-
 from constants import TABLES
 
 
